@@ -1,7 +1,10 @@
-const { Order } = require('../db').models;
+const db = require('../db/conn.js');
+const { Order } = db.models;
 const app = require('express').Router();
 
 module.exports = app;
+
+console.log("on Router!")
 
 app.put('/:id', (req, res, next)=> {
   if (!req.body.address) return res.render('index', { error: "Must have address" });
@@ -10,8 +13,9 @@ app.put('/:id', (req, res, next)=> {
     .catch(next);
 });
 
-app.post('/:id/lineItems', (req, res, next)=> {
-  Order.addProductToCart(req.body.productId*1)
+app.post('lineItems/:id', (req, res, next) => {
+  console.log('here!!!')
+  Order.addProductToCart(req.params.Id*1)
     .then( ()=> res.redirect('/'))
     .catch(next);
 });

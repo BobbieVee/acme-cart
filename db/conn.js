@@ -41,22 +41,32 @@ const seed = () => {
 		return Order.create({address: 'Nashville, TN'});
 	})
 	.then(order => {
-		return LineItem.create({quantity: 1, productId: products[0].id, orderId: order.id });
+		return Promise.all([
+			Order.addProductToCart(products[0].id), 
+			Order.addProductToCart(products[0].id),
+			Order.addProductToCart(products[1].id)
+		])
 	})
 	.then(() => console.log(chalk.blue('    DB seeded')));
 };
 
 Order.addProductToCart = (productId) => {
+	let cart;
 	return Order.findOne({where: {isCart: true}})
 	.then((cart) => {
 		if (cart === null ) {
-			console.log('No cart')
 			return Order.create()
 		}
 		return cart;
 	})
-	.then(order => {
-		return LineItem.create({quantity: 1, orderId: order.id, productId})
+	.then(_cart => {
+		cart = _cart;
+		return LineItem.findOne({where: {orderId: cart.id, productId}})
+	})
+	.then(lineItem => {
+		if (!lineItem) return LineItem.create({quantity: 1, orderId: cart.id, productId});
+		lineItem.quantity = lineItem.quantity++;
+		return lineItem.save();
 	})
 	.then(lineitem => lineitem);
 };
@@ -69,6 +79,21 @@ Order.updateFromRequestBody = (orderId, _reqBody) => {
 	const reqBody = Object.assign({isCart: false}, _reqBody)
 	return Order.update(reqBody, {where: {id: orderId}})
 };
+
+Product.allData = () => {
+	return Promise.all([
+		Product.findAll(),
+		Order.findAll({
+			include: [{model: LineItem, include: [{model: Product}]}]
+		})
+	])
+	.then(([products, _orders]) => {
+		// console.log('_orders[0].lineItems[0].product.name = ', _orders[0].lineItems[0].product.name )
+		const cart = _orders.filter((order) => order.isCart);
+		const orders = _orders.filter((order) => !order.isCart);
+		return [products, orders, cart[0]];		
+	})
+}
 
 
 module.exports = {

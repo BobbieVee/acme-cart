@@ -3,18 +3,27 @@ const app = express();
 const path = require('path');
 const port = process.env.port || 3000;
 const swig = require('swig');
-// const routes = require('./routes/orders');
+const db = require('./db/conn.js');
+const {Product} = require('./db/conn.js').models;
+const routes = require('./routes/orders');
+const methodOverride = require('method-override');
 
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', path.join(__dirname, 'views'));
 swig.setDefaults({cache: false});
+app.use(methodOverride('_method'));
 
 app.use('/scripts', express.static(path.join(__dirname, 'node_modules')));
 
 app.use('/', (req, res, next) => {
-	res.render('index');
-})
-// app.use('/orders', routes);
+	Product.allData()
+	.then(([products, orders, cart]) => {
+		res.render('index', {products, orders, cart})
+	})		
+	.catch(next);
+});
 
-app.listen(port, () => console.log(`Listening very intently on port ${port}`))
+app.use('/orders', routes)
+db.seed()
+.then(() => app.listen(port, () => console.log(`Listening very intently on port ${port}`)));

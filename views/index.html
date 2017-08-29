@@ -4,16 +4,56 @@
 	<div class ='container'>
 		<h1>Acme Chart Toppers</h1>
 		<div class='col-sm-8'>
-			<h2>Cream of the Crop</h2>
+			<h2>Favorite Picks:</h2>
+			<ul class='list-group'>
+				{% for product in products %}
+				<li class='list-group-item well'>
+					<h4>{{ product.name }}</h4>
+					<form action='/orders/lineItems/{{product.id}}' method='POST'>
+						<button class='btn btn-primary btn-xs'>Add to Cart</button>
+					</form>
+				</li>
+				{% endfor %}
+			</ul>
 			
 		</div>
 		<div class='col-sm-4'>
 		  <h2>Your Cart</h2>
-				<div class='well'>
+			<div class='well'>
+				<ul class='list-group'>
+					{% for lineItem in cart.lineItems %}
+					<li class='list-group-item well'>
+					<h4>{{ lineItem.product.name }}</h4>
+					<form action='/orders/lineItems/{{lineItem.id}}?_method=DELETE' method='POST'>
+						<button class='btn btn-warning btn-xs'>Remove From Cart</button>
+					</form>
+					</li>
+					{% endfor %}
+				</ul>	
+				<form>
+						<button class='btn btn-primary btn-sm'>Place Order</button>
+				</form>
 			</div>
-		  <h2>Your Orders</h2>
+
+			{%  if orders.length > 0 %}
+			  <h2>Your Orders</h2>
 				<div class='well'>
-			</div>
+						{% for order in orders %}
+						<li class='list-group-item well'>
+							<h4>{{ order.address }}</h4>
+							<ul class='list-group'>
+								{% for lineItem in order.lineItems %}
+								<li class='list-group-item well'>
+								<h5>{{ lineItem.product.name }}  &nbsp&nbsp x{{lineItem.quantity}}</h5>
+								</li>
+								{% endfor %}
+							</ul>							
+						</li>
+						{% endfor %}
+					</ul>	
+				</div>
+			{% endif %}
+
 		</div>
 	</div>	
 {% endblock%}
