@@ -12,12 +12,17 @@ const LineItem = db.define('lineItem', {
 
 const Order = db.define('order', {
 	address: Sequelize.STRING,
-	isCart: Sequelize.BOOLEAN
+	isCart: {
+		type: Sequelize.BOOLEAN,
+		defaultValue: true
+	} 
 });
 
 Order.hasMany(LineItem);
+Product.hasMany(LineItem);
 LineItem.belongsTo(Order);
 LineItem.belongsTo(Product);
+
 
 const sync = () => db.sync({force:true});
 
@@ -33,13 +38,38 @@ const seed = () => {
 	})
 	.then(_products => {
 		products = _products;
-		return Order.create({address: 'Nashville, TN'})
+		return Order.create({address: 'Nashville, TN'});
 	})
 	.then(order => {
-		LineItem.create({quantity: 1, productId: products[0].id, orderId: order.id })
-		console.log(chalk.blue('    DB seeded'));
-	});
+		return LineItem.create({quantity: 1, productId: products[0].id, orderId: order.id });
+	})
+	.then(() => console.log(chalk.blue('    DB seeded')));
 };
+
+Order.addProductToCart = (productId) => {
+	return Order.findOne({where: {isCart: true}})
+	.then((cart) => {
+		if (cart === null ) {
+			console.log('No cart')
+			return Order.create()
+		}
+		return cart;
+	})
+	.then(order => {
+		return LineItem.create({quantity: 1, orderId: order.id, productId})
+	})
+	.then(lineitem => lineitem);
+};
+
+Order.destroyLineItem = (orderId, lineItemId) => {
+	return LineItem.destroy({where: {id: lineItemId}})
+};
+
+Order.updateFromRequestBody = (orderId, reqBody) => {
+	if (!reqBody.address) return "error";
+	return Order.update(reqBody, {where: {id: orderId}})
+};
+
 
 module.exports = {
 	seed,
