@@ -25,6 +25,7 @@ describe('Database', (done) => {
 			return Order.findAll()
 			.then(orders => {
 				expect(orders[0].address).to.equal('Nashville, TN');
+				expect(orders[0].isCart).to.equal(true);
 			})
 			.catch(done);
 		});
@@ -81,7 +82,7 @@ describe('Database', (done) => {
 
 	describe('Order', () => {
 		it('cart becomes an order', () => {
-			return Order.updateFromRequestBody(1, {address: 'New York, NY', isCart: false})
+			return Order.updateFromRequestBody(1, {address: 'New York, NY'})
 			.then(() => {
 				return Order.findById(1)
 			})
@@ -98,21 +99,12 @@ describe('Database', (done) => {
 			.then((lineItem) => {
 				expect(lineItem.id).to.equal(5);
 				expect(lineItem.orderId).to.equal(2);
+				return Order.findOne({where: {id: lineItem.orderId}});
+			})
+			.then(order => {
+				expect(order.isCart).to.equal(true);
 			})
 			.catch(done);					
-		});
-	});
-
-	describe('Order', () => {
-		it('fails without an address', () => {
-			return Order.updateFromRequestBody(1, {address: '', isCart: false})
-			.then((err, result) => {
-				console.log('err = ', err)
-			})
-			// .then(order => {
-			// 	expect(order.isCart).to.equal(false);
-			// })
-			// .catch(err => console.log(err));					
 		});
 	});
 });	

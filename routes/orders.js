@@ -4,14 +4,10 @@ const app = require('express').Router();
 module.exports = app;
 
 app.put('/:id', (req, res, next)=> {
+  if (!req.body.address) return res.render('index', { error: "Must have address" });
   Order.updateFromRequestBody(req.params.id, req.body)
     .then( () => res.redirect('/'))
-    .catch(ex => {
-      if(ex.message === 'address required'){
-        return res.render('index', { error: ex });
-      }
-      next(ex);
-    });
+    .catch(next);
 });
 
 app.post('/:id/lineItems', (req, res, next)=> {

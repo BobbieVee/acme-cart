@@ -65,8 +65,8 @@ Order.destroyLineItem = (orderId, lineItemId) => {
 	return LineItem.destroy({where: {id: lineItemId}})
 };
 
-Order.updateFromRequestBody = (orderId, reqBody) => {
-	if (!reqBody.address) return "error";
+Order.updateFromRequestBody = (orderId, _reqBody) => {
+	const reqBody = Object.assign({isCart: false}, _reqBody)
 	return Order.update(reqBody, {where: {id: orderId}})
 };
 
