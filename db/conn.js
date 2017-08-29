@@ -43,10 +43,12 @@ const seed = () => {
 	.then(order => {
 		return Promise.all([
 			Order.addProductToCart(products[0].id), 
-			Order.addProductToCart(products[0].id),
 			Order.addProductToCart(products[1].id)
-		])
+		]);
 	})
+	.then(() => {
+		return Order.addProductToCart(products[0].id)
+	}) 
 	.then(() => console.log(chalk.blue('    DB seeded')));
 };
 
@@ -64,8 +66,15 @@ Order.addProductToCart = (productId) => {
 		return LineItem.findOne({where: {orderId: cart.id, productId}})
 	})
 	.then(lineItem => {
-		if (!lineItem) return LineItem.create({quantity: 1, orderId: cart.id, productId});
-		lineItem.quantity = lineItem.quantity++;
+		if (!lineItem) {
+			console.log('no lineItem found')
+			return LineItem.create({quantity: 1, orderId: cart.id, productId});
+		}
+		console.log('lineItem FOUND') 
+		let quantity = lineItem.quantity;
+		lineItem.quantity = quantity + 1;
+
+		console.log('lineItem.quantity = ', lineItem.quantity)
 		return lineItem.save();
 	})
 	.then(lineitem => lineitem);

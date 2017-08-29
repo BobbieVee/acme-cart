@@ -15,8 +15,9 @@ swig.setDefaults({cache: false});
 app.use(methodOverride('_method'));
 
 app.use('/scripts', express.static(path.join(__dirname, 'node_modules')));
+app.use('/orders', routes);
 
-app.use('/', (req, res, next) => {
+app.get('/', (req, res, next) => {
 	Product.allData()
 	.then(([products, orders, cart]) => {
 		res.render('index', {products, orders, cart})
@@ -24,6 +25,6 @@ app.use('/', (req, res, next) => {
 	.catch(next);
 });
 
-app.use('/orders', routes)
+
 db.seed()
 .then(() => app.listen(port, () => console.log(`Listening very intently on port ${port}`)));

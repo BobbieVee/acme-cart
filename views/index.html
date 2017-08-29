@@ -23,15 +23,17 @@
 				<ul class='list-group'>
 					{% for lineItem in cart.lineItems %}
 					<li class='list-group-item well'>
-					<h4>{{ lineItem.product.name }}</h4>
-					<form action='/orders/lineItems/{{lineItem.id}}?_method=DELETE' method='POST'>
+					<h4>{{ lineItem.product.name }} &nbsp&nbsp x{{lineItem.quantity}}</h4>
+					<form action='/orders/{{cart.id}}/lineItems/{{lineItem.id}}?_method=DELETE' method='POST'>
 						<button class='btn btn-warning btn-xs'>Remove From Cart</button>
 					</form>
 					</li>
 					{% endfor %}
 				</ul>	
-				<form>
-						<button class='btn btn-primary btn-sm'>Place Order</button>
+				<form action="/orders/{{cart.id}}?_method=put" method='POST'>
+					<label>Address</label>
+					<input type="text" name="address">
+						<button type='submit' class='btn btn-primary btn-sm'>Place Order</button>
 				</form>
 			</div>
 

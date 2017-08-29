@@ -4,18 +4,16 @@ const app = require('express').Router();
 
 module.exports = app;
 
-console.log("on Router!")
-
 app.put('/:id', (req, res, next)=> {
+  console.log('req.body = ', req.body)
   if (!req.body.address) return res.render('index', { error: "Must have address" });
   Order.updateFromRequestBody(req.params.id, req.body)
     .then( () => res.redirect('/'))
     .catch(next);
 });
 
-app.post('lineItems/:id', (req, res, next) => {
-  console.log('here!!!')
-  Order.addProductToCart(req.params.Id*1)
+app.post('/lineItems/:id', (req, res, next) => {
+  Order.addProductToCart(req.params.id*1)
     .then( ()=> res.redirect('/'))
     .catch(next);
 });
