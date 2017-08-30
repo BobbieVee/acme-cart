@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const port = process.env.port || 3000;
+const port = process.env.PORT || 3000;
 const swig = require('swig');
 const db = require('./db/conn.js');
 const {Product} = require('./db/conn.js').models;
