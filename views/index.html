@@ -18,7 +18,10 @@
 			
 		</div>
 		<div class='col-sm-4'>
-		  <h2>Your Cart</h2>
+	  <h2>Your Cart</h2>
+		{% if error %}
+		<div class='alert alert-danger '><h4>{{error}}</h4></div>
+		{% endif %}
 			<div class='well'>
 				<ul class='list-group'>
 					{% for lineItem in cart.lineItems %}

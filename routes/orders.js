@@ -1,15 +1,21 @@
 const db = require('../db/conn.js');
-const { Order } = db.models;
+const { Order, Product } = db.models;
 const app = require('express').Router();
 
 module.exports = app;
 
 app.put('/:id', (req, res, next)=> {
   console.log('req.body = ', req.body)
-  if (!req.body.address) return res.render('index', { error: "Must have address" });
-  Order.updateFromRequestBody(req.params.id, req.body)
+  if (!req.body.address) {
+    Product.allData()
+    .then(([products, orders, cart]) => {
+      res.render('index', {products, orders, cart, error: 'Address required'})
+    })
+  } else {
+    Order.updateFromRequestBody(req.params.id, req.body)
     .then( () => res.redirect('/'))
-    .catch(next);
+    .catch(next); 
+  }
 });
 
 app.post('/lineItems/:id', (req, res, next) => {

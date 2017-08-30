@@ -7,12 +7,15 @@ const db = require('./db/conn.js');
 const {Product} = require('./db/conn.js').models;
 const routes = require('./routes/orders');
 const methodOverride = require('method-override');
+const bodyParser = require('body-parser');
 
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', path.join(__dirname, 'views'));
 swig.setDefaults({cache: false});
 app.use(methodOverride('_method'));
+app.use(bodyParser.urlencoded({ extended: false }))
+
 
 app.use('/scripts', express.static(path.join(__dirname, 'node_modules')));
 app.use('/orders', routes);
