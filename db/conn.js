@@ -67,14 +67,10 @@ Order.addProductToCart = (productId) => {
 	})
 	.then(lineItem => {
 		if (!lineItem) {
-			console.log('no lineItem found')
 			return LineItem.create({quantity: 1, orderId: cart.id, productId});
 		}
-		console.log('lineItem FOUND') 
 		let quantity = lineItem.quantity;
 		lineItem.quantity = quantity + 1;
-
-		console.log('lineItem.quantity = ', lineItem.quantity)
 		return lineItem.save();
 	})
 	.then(lineitem => lineitem);
@@ -97,7 +93,6 @@ Product.allData = () => {
 		})
 	])
 	.then(([products, _orders]) => {
-		// console.log('_orders[0].lineItems[0].product.name = ', _orders[0].lineItems[0].product.name )
 		const cart = _orders.filter((order) => order.isCart);
 		const orders = _orders.filter((order) => !order.isCart);
 		return [products, orders, cart[0]];		

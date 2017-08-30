@@ -5,7 +5,6 @@ const app = require('express').Router();
 module.exports = app;
 
 app.put('/:id', (req, res, next)=> {
-  console.log('req.body = ', req.body)
   if (!req.body.address) {
     Product.allData()
     .then(([products, orders, cart]) => {

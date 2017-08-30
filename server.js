@@ -16,7 +16,6 @@ swig.setDefaults({cache: false});
 app.use(methodOverride('_method'));
 app.use(bodyParser.urlencoded({ extended: false }))
 
-
 app.use('/scripts', express.static(path.join(__dirname, 'node_modules')));
 app.use('/orders', routes);
 
